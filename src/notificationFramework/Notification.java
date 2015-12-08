@@ -8,16 +8,16 @@ import java.time.LocalTime;
 public class Notification<T>
 {
 
-	T					event;
-	LocalTime			eventTime;
+	T						event;
+	LocalTime				eventTime;
 	NotificationSource<T>	eventSource;
 
 
-	
-	
 	/**
+	 * Creates a new notification, with the notification payload and a reference to the source of the notification,
+	 * along with the timestamp of the notification
+	 * 
 	 * @param event
-	 * @param eventTime
 	 * @param eventSource
 	 */
 	public Notification(T event, NotificationSource<T> eventSource)
@@ -29,23 +29,27 @@ public class Notification<T>
 	}
 
 
-	
-	
-	
+	/**
+	 * @return
+	 */
 	public T getEvent()
 	{
 		return event;
 	}
 
 
-
-
+	/**
+	 * @param event
+	 */
 	public synchronized void setEvent(T event)
 	{
 		this.event = event;
 	}
 
 
+	/**
+	 * @return
+	 */
 	public synchronized String getName()
 	{
 		String currentLocation = "location_unknown";
@@ -60,24 +64,36 @@ public class Notification<T>
 	}
 
 
+	/**
+	 * @return
+	 */
 	public LocalTime getEventTime()
 	{
 		return eventTime;
 	}
 
 
+	/**
+	 * Sets the time of the notification to the current local time
+	 */
 	public void setEventTime()
 	{
 		this.eventTime = LocalTime.now(Clock.systemDefaultZone());
 	}
 
 
+	/**
+	 * @return
+	 */
 	public NotificationSource<T> getEventSource()
 	{
 		return eventSource;
 	}
 
 
+	/**
+	 * @param eventSource
+	 */
 	public void setEventSource(NotificationSource<T> eventSource)
 	{
 		this.eventSource = eventSource;

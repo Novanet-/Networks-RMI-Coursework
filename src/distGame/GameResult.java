@@ -16,6 +16,9 @@ public class GameResult
 	}
 
 
+	/**
+	 * @return
+	 */
 	public int getDieResult()
 	{
 		return dieResult;
