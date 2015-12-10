@@ -2,11 +2,14 @@ package distGame;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.ServerSocket;
+import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -20,14 +23,14 @@ public class GameClient implements NotificationSink<GameResult>, Serializable
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= -4282174207734023407L;
-	private int					clientNo;
-	private int					desiredDieValue;
-
+	private static final long serialVersionUID = -4282174207734023407L;
+	private int clientNo;
+	private int desiredDieValue;
 
 	/**
-	 * Initialises a client with a unique number and a desired die value Registers it with all servers found in the
-	 * local rmi registry, and then exports it
+	 * Initialises a client with a unique number and a desired die value
+	 * Registers it with all servers found in the local rmi registry, and then
+	 * exports it
 	 * 
 	 * @param clientNo
 	 * @param desiredDieValue
@@ -47,7 +50,24 @@ public class GameClient implements NotificationSink<GameResult>, Serializable
 				server.registerClient(this);
 			}
 
-			UnicastRemoteObject.exportObject(this, 71);
+			//UnicastRemoteObject.exportObject(this, 71);
+
+			boolean clientExported = false;
+			while (!(clientExported))
+			{
+				try
+				{
+					ServerSocket servSocket = new ServerSocket(0);
+					int portNo = servSocket.getLocalPort();
+					servSocket.close();
+					UnicastRemoteObject.exportObject(this, portNo);
+					clientExported = true;
+				}
+				catch (RemoteException e)
+				{
+					continue;
+				}
+			}
 
 		}
 		catch (NotBoundException | IOException e)
@@ -57,9 +77,9 @@ public class GameClient implements NotificationSink<GameResult>, Serializable
 
 	}
 
-
 	/**
-	 * Unregisters the client from all servers in the local rmi registry, and unexports it
+	 * Unregisters the client from all servers in the local rmi registry, and
+	 * unexports it
 	 * 
 	 * @throws RemoteException
 	 */
@@ -84,10 +104,10 @@ public class GameClient implements NotificationSink<GameResult>, Serializable
 		}
 	}
 
-
 	/**
-	 * Checks to see if the die value within the game result is equal to the client's desired die value, if true, then
-	 * prints that the client has won, with that die value rolled
+	 * Checks to see if the die value within the game result is equal to the
+	 * client's desired die value, if true, then prints that the client has won,
+	 * with that die value rolled
 	 * 
 	 * @see notificationFramework.NotificationSink#recieveNotificationOnClient(notificationFramework.Notification)
 	 */
@@ -98,10 +118,10 @@ public class GameClient implements NotificationSink<GameResult>, Serializable
 		int dieRoll = recievedResult.getDieResult();
 		if (dieRoll == getDesiredDieValue())
 		{
-			System.out.println("Client: " + getClientNo() + ": " + "Yay! I won, because the dice rolled " + getDesiredDieValue());
+			System.out.println(
+					"Client: " + getClientNo() + ": " + "Yay! I won, because the dice rolled " + getDesiredDieValue());
 		}
 	}
-
 
 	/**
 	 * @return
@@ -110,7 +130,6 @@ public class GameClient implements NotificationSink<GameResult>, Serializable
 	{
 		return clientNo;
 	}
-
 
 	/**
 	 * @return
